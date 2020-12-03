@@ -36,5 +36,14 @@ function validate_root(
             # ADD MANDATORY BIDS FIELDS
         end
     end
-    return root, description
+
+    subjects = String[]
+    for name in readdir(root)
+        println(name[1:3])
+        if (name[1:3] == "sub") & isdir(joinpath(root, name))
+            push!(subjects, name[5:end])
+        end
+    end
+
+    return root, description, subjects
 end 
