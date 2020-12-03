@@ -4,15 +4,6 @@ function validate_root(
     root::String,
     validate::Bool=true
 )
-    # Check if input root directory is string
-    if typeof(root) != String
-        error("root argument must be a string (or a type that ",
-              "supports casting to string, such as ",
-              "pathlib.Path) specifying the directory ",
-              "containing the BIDS dataset.")
-        exit
-    end
-
     # Grab absolute path
     root = abspath(root)
 
@@ -36,5 +27,14 @@ function validate_root(
             # ADD MANDATORY BIDS FIELDS
         end
     end
-    return root, description
+
+    subjects = String[]
+    for name in readdir(root)
+        println(name[1:3])
+        if (name[1:3] == "sub") & isdir(joinpath(root, name))
+            push!(subjects, name[5:end])
+        end
+    end
+
+    return root, description, subjects
 end 
