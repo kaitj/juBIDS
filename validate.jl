@@ -36,5 +36,35 @@ function validate_root(
             # ADD MANDATORY BIDS FIELDS
         end
     end
+
     return root, description
 end 
+
+struct BIDSFile
+    path::String
+end
+
+struct BIDSNode
+    path::String
+#    root::BIDSNode
+#    parent::BIDSNode
+    children::Array{BIDSNode}
+    files::Array{BIDSFile}
+end
+
+function gen_bids_tree(root_path)
+    root, description = validate_root(root_path, false)
+    root_node = BIDSNode(root_path, [], [])
+    for (rootpath, dirs, files) in walkdir(root_path)
+        for f in files
+            bf = BIDSFile(f)
+            push!(root_node.files, bf)
+        end
+        for d in dirs
+            d = joinpath(rootpath, d)
+            push!(root_node.children, gen_bids_tree(d))
+        end
+    break
+    end
+    return root_node
+end
